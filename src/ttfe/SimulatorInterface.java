@@ -113,4 +113,17 @@ public interface SimulatorInterface {
 	 *            If the coordinates are not valid or the piece value is negative.
 	 */
 	public void setPieceAt(int x, int y, int piece);
+
+	// //idk if this allowed but fuck it
+	// public void setBoard(int width, int height);
+
+	// public void setPoints(int meltedPieces);
+
+	// public void setNumMoves();
+
+	// public void setNumPieces();
+	
+	// public void setBoardHeight();
+	
+	// public void setBoardWidth();
 }

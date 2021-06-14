@@ -67,7 +67,7 @@ public class TTFE {
 	 *
 	 *            (1) random-seed (int)
 	 *            (2) board-width (int)
-	 *            (3) board-heigh (int)
+	 *            (3) board-height (int)
 	 *            (4) use-human   ("true" for true otherwise false)*
 	 *
 	 *            * See string2boolean for more information.

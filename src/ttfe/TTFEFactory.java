@@ -17,9 +17,9 @@ public class TTFEFactory {
 	 * @return A 2048 simulator.
 	 */
 	public static SimulatorInterface createSimulator(int width, int height,
-			Random r) {
-		// TODO: Implement me. Return a simulator instance.
-		return null;
+			Random r) { // this is not a seed, its the actual random object, ready to use!
+		// doneTODO: Implement me. Return a simulator instance.
+		return new Simulator(width, height, r);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class TTFEFactory {
 			return new HumanPlayer();
 		} 
 		
-		// TODO: Implement me. Return a computer player instance.
+		// laterTODO: Implement me. Return a computer player instance.
 		return null;
 	}
 
