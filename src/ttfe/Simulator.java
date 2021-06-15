@@ -141,6 +141,9 @@ public class Simulator implements SimulatorInterface {
     }
 
     public boolean isMovePossible(MoveDirection direction) {
+        if (direction == null){
+            throw new IllegalArgumentException("Invalid direction was given");
+        }
         int x_dir = 0;
         int y_dir = 0;
         int x_start = 0;
@@ -165,7 +168,7 @@ public class Simulator implements SimulatorInterface {
                 x_end -= 1;
                 break;
             default:
-                throw new IllegalArgumentException("Invalid direction is given");
+                throw new IllegalArgumentException("Invalid direction was given");
         }
 
         for (int y_pos = y_start; y_pos < y_end; y_pos++) {
@@ -279,6 +282,9 @@ public class Simulator implements SimulatorInterface {
 
         int x_dir = 0;
         int y_dir = 0;
+        if (direction == null){
+            throw new IllegalArgumentException("Invalid direction was given.");
+        }
 
         switch (direction) {
             case NORTH:

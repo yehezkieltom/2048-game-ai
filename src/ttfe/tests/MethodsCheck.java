@@ -2,6 +2,8 @@ package ttfe.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
@@ -80,9 +82,9 @@ public class MethodsCheck {
                 // current_board[y_pos][x_pos] = game.getPieceAt(x_pos, y_pos);
 
                 if (initial_board[y_pos][x_pos] == 0 && 
-                    (game.getPieceAt(x_pos, y_pos) != 2 && game.getPieceAt(x_pos, y_pos) != 4
-                    && game.getPieceAt(x_pos, y_pos) != 0)) {
-                        continue;
+                    !(game.getPieceAt(x_pos, y_pos) == 2 || game.getPieceAt(x_pos, y_pos) == 4
+                    || game.getPieceAt(x_pos, y_pos) == 0)) {
+                        invalid_value += 1;
                 }
             }
         }
@@ -266,7 +268,12 @@ public class MethodsCheck {
 
         assertFalse("Expected to return false after move performed and cleanup", game.isMovePossible(MoveDirection.SOUTH));
     }
-
+    @Test 
+    public void testIsMovePossibleNull() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> 
+            game.isMovePossible(null));
+        assertNotNull(exception);
+    }
     // performMove() test
     @Test
     public void testPerformMove3Pieces2InARoW() {
@@ -288,6 +295,13 @@ public class MethodsCheck {
         game.performMove(MoveDirection.NORTH);
         assertEquals("Expected to combined the piece into 4, have instead " + game.getPieceAt(0, 0), 4, game.getPieceAt(0, 0));
         
+    }
+
+    @Test
+    public void testPerformMove() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> 
+            game.performMove(null));
+        assertNotNull(exception);
     }
     
     private void boardCleanUp (int x_start, int x_end, int y_start, int y_end, SimulatorInterface game) {
