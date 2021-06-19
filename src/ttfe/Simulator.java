@@ -100,7 +100,7 @@ public class Simulator implements SimulatorInterface {
 
     public int getPieceAt(int x, int y) {
         if (x < 0 || x >= getBoardWidth() || y < 0 || y >= getBoardHeight()) {
-            throw new IllegalStateException("Invalid coordinate: possibly out of bound!");
+            throw new IllegalArgumentException("Invalid coordinate: possibly out of bound!");
         }
         return board[y][x];
     }
@@ -192,8 +192,8 @@ public class Simulator implements SimulatorInterface {
         return getNumPieces() < getBoardHeight()*getBoardWidth();
     }
 
-    /*
-    public boolean performMove(MoveDirection direction) {
+    
+    /*public boolean performMove(MoveDirection direction) {
 
         int change = 0;
         boolean checked = false;
@@ -274,7 +274,7 @@ public class Simulator implements SimulatorInterface {
         return true;
     }*/
 
-    public boolean performMove(MoveDirection direction) {
+    /* public boolean performMove(MoveDirection direction) {
         int first_order;
         int end_first_order;
         int end_second_order;
@@ -380,7 +380,118 @@ public class Simulator implements SimulatorInterface {
 
         return true;
     }
+ */
+    
+    public boolean performMove(MoveDirection direction) {
+        int first_order;
+        int end_first_order;
+        int end_second_order;
+        boolean increment_first_order;
 
+        int x_dir = 0;
+        int y_dir = 0;
+        if (direction == null){
+            throw new IllegalArgumentException("Invalid direction was given.");
+        }
+
+        switch (direction) {
+            case NORTH:
+                first_order = 1;
+                end_first_order = getBoardHeight();
+                end_second_order = getBoardWidth();
+                increment_first_order = true;
+                y_dir = -1;
+                break;
+            case SOUTH:
+                first_order = getBoardHeight() - 2;
+                end_first_order = -1;
+                end_second_order = getBoardWidth();
+                increment_first_order = false;
+                y_dir = 1;
+                break;
+            case WEST:
+                first_order = 1;
+                end_first_order = getBoardWidth();
+                end_second_order = getBoardHeight();
+                increment_first_order = true;
+                x_dir = -1;
+                break;
+            case EAST:
+                first_order = getBoardWidth() - 2;
+                end_first_order = -1;
+                end_second_order = getBoardHeight();
+                increment_first_order = false;
+                x_dir = 1;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid direction given!");
+        }
+        if (!isMovePossible(direction)) {
+            return false;
+        }
+
+        boolean[][] combination = new boolean[getBoardHeight()][getBoardWidth()];// default value is false
+        // int change;
+        int y_pos;
+        int x_pos;
+        int temp_y_dir;
+        int temp_x_dir;
+        boolean move_possible;
+        // boolean checked = false;
+
+        for(int first_order_i = first_order; intCompare(first_order_i, end_first_order, increment_first_order);
+                    first_order_i = inDecrementor(first_order_i, increment_first_order)) {
+                        for (int second_order_i = 0; second_order_i < end_second_order; second_order_i++) {
+                            x_pos = adapter(first_order_i, second_order_i, direction, "x_pos");
+                            y_pos = adapter(first_order_i, second_order_i, direction, "y_pos");
+
+                            if (getPieceAt(x_pos, y_pos) != 0){
+                                // temp_first_order_pos = first_order_i;
+                                move_possible = true;
+                                temp_y_dir = 0;
+                                temp_x_dir = 0;
+                                while (intCompare(first_order_i + temp_y_dir + temp_x_dir, first_order + x_dir + y_dir, !increment_first_order)
+                                    && !combination[y_pos + temp_y_dir + y_dir][x_pos + temp_x_dir + x_dir] && move_possible) {
+                                        if (getPieceAt(x_pos + temp_x_dir , y_pos + temp_y_dir) 
+                                            == getPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir)) {
+                                                setPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir, getPieceAt(x_pos + temp_x_dir, y_pos + temp_y_dir) * 2);
+                                                setPieceAt(x_pos + temp_x_dir, y_pos + temp_y_dir, 0);
+                                                this.points += getPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir);
+                                                combination[x_pos + temp_x_dir + x_dir][y_pos + temp_y_dir + y_dir] = true;
+                                                break;
+                                            }
+
+                                        if (getPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir) == 0) {
+                                                setPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir, getPieceAt(x_pos + temp_x_dir, y_pos + temp_y_dir));
+                                                setPieceAt(x_pos + temp_x_dir, y_pos + temp_y_dir, 0);
+                                                temp_x_dir += x_dir;
+                                                temp_y_dir += y_dir;
+                                                continue;
+                                        }
+
+                                        move_possible = false;
+                                        
+                                }
+                            }
+                        }
+                    }
+                    
+        int tempNumPieces = 0;
+        for (y_pos = 0; y_pos < getBoardHeight(); y_pos++) {
+            for (x_pos = 0; x_pos < getBoardWidth(); x_pos++) {
+                if (getPieceAt(x_pos, y_pos) > 0) {
+                    tempNumPieces += 1;
+                }
+            }
+        } 
+        
+        this.numPieces = tempNumPieces;
+
+        addPiece();
+        setNumMoves();
+        return true;
+    }
+ 
     public void run(PlayerInterface player, UserInterface ui) {
         if(player == null || ui == null) {
             throw new IllegalArgumentException("Player and/or UI are not initialized");
@@ -389,6 +500,7 @@ public class Simulator implements SimulatorInterface {
             ui.updateScreen(this);
             performMove(player.getPlayerMove(this, ui));
         }
+        ui.updateScreen(this);
         ui.showGameOverScreen(this);
     }
 
