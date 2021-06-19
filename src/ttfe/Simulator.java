@@ -60,13 +60,14 @@ public class Simulator implements SimulatorInterface {
         int dice;
 
         if (!isSpaceLeft()) {
-            throw new IllegalArgumentException("The board is already full");
+            throw new IllegalStateException("The board is already full");
         }
 
         do {
             x_pos = getRandom().nextInt(getBoardWidth());
             y_pos = getRandom().nextInt(getBoardWidth());
         } while (getPieceAt(x_pos, y_pos) != 0);
+
         
         dice = getRandom().nextInt(10); //[ 0 : upperbound [
 
