@@ -26,7 +26,10 @@ public class Simulator implements SimulatorInterface {
         this.points = 0;
         this.numMoves = 0;
         this.numPieces = 0;
-        //now how to save the seed
+
+        this.addPiece();
+        this.addPiece();
+        
 
     }
 
@@ -493,8 +496,6 @@ public class Simulator implements SimulatorInterface {
         if(player == null || ui == null) {
             throw new IllegalArgumentException("Player and/or UI are not initialized");
         }
-        addPiece();
-        addPiece();
 
         while (isMovePossible()) {
             ui.updateScreen(this);
@@ -520,7 +521,7 @@ public class Simulator implements SimulatorInterface {
         this.numMoves += 1;
     }
 
-    private Random getRandom() {
+    public Random getRandom() {
         return random;
     }
 
