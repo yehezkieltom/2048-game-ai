@@ -65,7 +65,7 @@ public class Simulator implements SimulatorInterface {
 
         do {
             x_pos = getRandom().nextInt(getBoardWidth());
-            y_pos = getRandom().nextInt(getBoardWidth());
+            y_pos = getRandom().nextInt(getBoardHeight());
         } while (getPieceAt(x_pos, y_pos) != 0);
 
         
@@ -488,7 +488,6 @@ public class Simulator implements SimulatorInterface {
         
         this.numPieces = tempNumPieces;
 
-        addPiece();
         setNumMoves();
         return true;
     }
@@ -500,6 +499,7 @@ public class Simulator implements SimulatorInterface {
         while (isMovePossible()) {
             ui.updateScreen(this);
             performMove(player.getPlayerMove(this, ui));
+            addPiece();
         }
         ui.updateScreen(this);
         ui.showGameOverScreen(this);
@@ -507,7 +507,7 @@ public class Simulator implements SimulatorInterface {
 
     public void setPieceAt(int x, int y, int piece) {
 
-        if (x < 0 || x > getBoardWidth() || y < 0 || y > getBoardHeight()){
+        if (x < 0 || x >= getBoardWidth() || y < 0 || y >= getBoardHeight()){
             throw new IllegalArgumentException("Piece set at invalid coordinate");
         } 
         if (piece < 0) {
