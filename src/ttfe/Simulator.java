@@ -474,16 +474,7 @@ public class Simulator implements SimulatorInterface {
                         }
                     }
                     
-        int tempNumPieces = 0;
-        for (y_pos = 0; y_pos < getBoardHeight(); y_pos++) {
-            for (x_pos = 0; x_pos < getBoardWidth(); x_pos++) {
-                if (getPieceAt(x_pos, y_pos) > 0) {
-                    tempNumPieces += 1;
-                }
-            }
-        } 
-        
-        this.numPieces = tempNumPieces;
+        setNumPieces();
 
         setNumMoves();
         return true;
@@ -494,6 +485,7 @@ public class Simulator implements SimulatorInterface {
             throw new IllegalArgumentException("Player and/or UI are not initialized");
         }
         boolean moved;
+        setNumPieces();
         while (isMovePossible()) {
             ui.updateScreen(this);
             moved = false;
@@ -501,6 +493,7 @@ public class Simulator implements SimulatorInterface {
                 moved = performMove(player.getPlayerMove(this, ui));
             }
             addPiece();
+            setNumPieces();
         }
         ui.updateScreen(this);
         ui.showGameOverScreen(this);

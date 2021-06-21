@@ -303,7 +303,76 @@ public class MethodsCheck {
             game.performMove(null));
         assertNotNull(exception);
     }
+
+    @Test
+    public void testMerging2248() {
+        boardCleanUp(0, game.getBoardWidth(), 0, game.getBoardHeight(), game);
+        game.setPieceAt(0, 0, 2);
+        game.setPieceAt(1, 0, 2);
+        game.setPieceAt(2, 0, 4);
+        game.setPieceAt(3, 0, 8);
+        game.performMove(MoveDirection.EAST);
+        assertEquals("Merging error", 3, game.getNumPieces());
+    }
+
+    @Test
+    public void testMerging2224() {
+        boardCleanUp(0, game.getBoardWidth(), 0, game.getBoardHeight(), game);
+        game.setPieceAt(0, 0, 2);
+        game.setPieceAt(1, 0, 2);
+        game.setPieceAt(2, 0, 2);
+        game.setPieceAt(3, 0, 4);
+        game.performMove(MoveDirection.EAST);
+        assertEquals("Merging error", 3, game.getNumPieces());
+    }
+
+    @Test
+    public void testMultipleMerge1() {
+        boardCleanUp(0, game.getBoardWidth(), 0, game.getBoardHeight(), game);
+        game.setPieceAt(0, 0, 2);
+        game.setPieceAt(1, 0, 2);
+        game.setPieceAt(0, 1, 2);
+        game.setPieceAt(1, 1, 2);
+        game.setPieceAt(2, 1, 2);
+        game.performMove(MoveDirection.EAST);
+        assertEquals("Merging error", 3, game.getNumPieces());
+    }
+
+    @Test
+    public void testMultipleMerge2() {
+        boardCleanUp(0, game.getBoardWidth(), 0, game.getBoardHeight(), game);
+        game.setPieceAt(0, 0, 4);
+        game.setPieceAt(1, 0, 4);
+        game.setPieceAt(0, 1, 4);
+        game.setPieceAt(1, 1, 4);
+        game.setPieceAt(2, 1, 4);
+        game.performMove(MoveDirection.EAST);
+        assertEquals("Merging error", 3, game.getNumPieces());
+    }
     
+    @Test
+    public void testMultipleMerge3() {
+        boardCleanUp(0, game.getBoardWidth(), 0, game.getBoardHeight(), game);
+        game.setPieceAt(0, 0, 4);
+        game.setPieceAt(1, 0, 4);
+        game.setPieceAt(1, 1, 4);
+        game.setPieceAt(2, 1, 4);
+        game.setPieceAt(2, 2, 4);
+        game.setPieceAt(3, 2, 4);
+        game.performMove(MoveDirection.EAST);
+        assertEquals("Merging error", 3, game.getNumPieces());
+    }
+
+    @Test
+    public void testMultipleMerge4() {
+        boardCleanUp(0, game.getBoardWidth(), 0, game.getBoardHeight(), game);
+        game.setPieceAt(0, 0, 2);
+        game.setPieceAt(1, 0, 2);
+        game.setPieceAt(2, 0, 4);
+        game.performMove(MoveDirection.WEST);
+        assertEquals("Merging error", 2, game.getNumPieces());
+    }
+
     private void boardCleanUp (int x_start, int x_end, int y_start, int y_end, SimulatorInterface game) {
         for (int y_pos = y_start; y_pos < y_end; y_pos++) {
             for (int x_pos = x_start; x_pos < x_end; x_pos++) {

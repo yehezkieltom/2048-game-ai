@@ -10,8 +10,8 @@ public class EIMAlaMotleikz implements PlayerInterface{
     private double stuckValue = -100000;
     private int depth = 3;// best at 3
     private int moveEfficiencyOffset = -3;
-    private double WeightNumPieceDelta = 4;//less important
-    private double combinationScoreScaler = 4;//more important
+    private double WeightNumPieceDelta = 5;//less important
+    private double combinationScoreScaler = 5;//more important
     private AIWorkspace basisBoardReference;
 
     public MoveDirection getPlayerMove(SimulatorInterface game, UserInterface ui) {
