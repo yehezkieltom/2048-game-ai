@@ -8,10 +8,10 @@ public class EIMAlaMotleikz implements PlayerInterface{
     private int boardWidth;
     private double WeightMatrixBase = 2;
     private double stuckValue = -100000;
-    private int depth = 3;// best at 3
-    private int moveEfficiencyOffset = -3;
-    private double WeightNumPieceDelta = 5;//less important
-    private double combinationScoreScaler = 5;//more important
+    private int depth = 6;// best at 3
+    private int moveEfficiencyOffset = 3;
+    private double WeightNumPieceDeltaMultiplier = 10;
+    private double combinationScoreMultiplier = 80;
     private AIWorkspace basisBoardReference;
 
     public MoveDirection getPlayerMove(SimulatorInterface game, UserInterface ui) {
@@ -49,7 +49,9 @@ public class EIMAlaMotleikz implements PlayerInterface{
 
         for (MoveDirection dir: MoveDirection.values()){
             AIWorkspace performedBoard = new AIWorkspace(basisBoardReference);
-            score += performedBoard.simulateMove(dir) * combinationScoreScaler;
+            score = performedBoard.simulateMove(dir) * combinationScoreMultiplier;
+
+            // printGameState(basisBoardReference);
             
             if (isIdentical(basisBoardReference, performedBoard)) {
                 continue;
@@ -67,9 +69,10 @@ public class EIMAlaMotleikz implements PlayerInterface{
 
     private double expectimax(AIWorkspace board, int n, boolean maxPlayer) {
         if (n == 0) {
-            if (board.isMovePossible()) {
+            if (!board.isMovePossible()) {
                 return stuckValue;
             }
+            // System.out.println("Actual Calculation returned");
             return patternHeuristic(board) + moveEfficiency(board);
         }
 
@@ -78,7 +81,7 @@ public class EIMAlaMotleikz implements PlayerInterface{
             double score = 0;
             for (MoveDirection dir: MoveDirection.values()){
                 AIWorkspace performedBoard = new AIWorkspace(board);
-                score += performedBoard.simulateMove(dir) * combinationScoreScaler;
+                score = performedBoard.simulateMove(dir) * combinationScoreMultiplier;
 
                 if (isIdentical(board, performedBoard)){
                     continue;
@@ -146,6 +149,16 @@ public class EIMAlaMotleikz implements PlayerInterface{
     }
 
     private double moveEfficiency(AIWorkspace board) {
-        return (basisBoardReference.getNumPieces() - board.getNumPieces() + moveEfficiencyOffset) * WeightNumPieceDelta;
+        return (basisBoardReference.getNumPieces() - board.getNumPieces() + moveEfficiencyOffset) * WeightNumPieceDeltaMultiplier;
+    }
+
+    private void printGameState(AIWorkspace board) {
+        for (int y = 0; y < board.getBoardHeight(); y++) {
+            for (int x = 0; x < board.getBoardWidth(); x++) {
+                System.out.print("|" + board.getPieceAt(x, y) + "|");
+            }
+            if(y != board.getBoardHeight() - 1){System.out.println("\n---------");}
+        }
+        System.out.print("\n\n\n");
     }
 }
