@@ -120,7 +120,7 @@ public class Simulator implements SimulatorInterface {
                         return true;
                     }
                 }
-                if (y_pos < getBoardHeight() - 2) { //south edge
+                if (y_pos < getBoardHeight() - 1) { //south edge
                     if (getPieceAt(x_pos, y_pos) == getPieceAt(x_pos, y_pos + 1)) {
                         return true;
                     }
@@ -130,7 +130,7 @@ public class Simulator implements SimulatorInterface {
                         return true;
                     }
                 }
-                if (x_pos < getBoardWidth() - 2){ //east edge
+                if (x_pos < getBoardWidth() - 1){ //east edge
                     if (getPieceAt(x_pos, y_pos) == getPieceAt(x_pos + 1, y_pos)) {
                         return true;
                     }
@@ -432,13 +432,11 @@ public class Simulator implements SimulatorInterface {
         }
 
         boolean[][] combination = new boolean[getBoardHeight()][getBoardWidth()];// default value is false
-        // int change;
         int y_pos;
         int x_pos;
         int temp_y_dir;
         int temp_x_dir;
         boolean move_possible;
-        // boolean checked = false;
 
         for(int first_order_i = first_order; intCompare(first_order_i, end_first_order, increment_first_order);
                     first_order_i = inDecrementor(first_order_i, increment_first_order)) {
@@ -447,7 +445,6 @@ public class Simulator implements SimulatorInterface {
                             y_pos = adapter(first_order_i, second_order_i, direction, "y_pos");
 
                             if (getPieceAt(x_pos, y_pos) != 0){
-                                // temp_first_order_pos = first_order_i;
                                 move_possible = true;
                                 temp_y_dir = 0;
                                 temp_x_dir = 0;
@@ -458,7 +455,7 @@ public class Simulator implements SimulatorInterface {
                                                 setPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir, getPieceAt(x_pos + temp_x_dir, y_pos + temp_y_dir) * 2);
                                                 setPieceAt(x_pos + temp_x_dir, y_pos + temp_y_dir, 0);
                                                 this.points += getPieceAt(x_pos + temp_x_dir + x_dir, y_pos + temp_y_dir + y_dir);
-                                                combination[x_pos + temp_x_dir + x_dir][y_pos + temp_y_dir + y_dir] = true;
+                                                combination[y_pos + temp_y_dir + y_dir][x_pos + temp_x_dir + x_dir] = true;
                                                 break;
                                             }
 
@@ -496,10 +493,13 @@ public class Simulator implements SimulatorInterface {
         if(player == null || ui == null) {
             throw new IllegalArgumentException("Player and/or UI are not initialized");
         }
-
+        boolean moved;
         while (isMovePossible()) {
             ui.updateScreen(this);
-            performMove(player.getPlayerMove(this, ui));
+            moved = false;
+            while (!moved){
+                moved = performMove(player.getPlayerMove(this, ui));
+            }
             addPiece();
         }
         ui.updateScreen(this);

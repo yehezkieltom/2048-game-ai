@@ -50,7 +50,7 @@ public class TTFEFactory {
 		} 
 		
 		// laterTODO: Implement me. Return a computer player instance.
-		return null;
+		return new EIMAlaMotleikz();
 	}
 
 }
