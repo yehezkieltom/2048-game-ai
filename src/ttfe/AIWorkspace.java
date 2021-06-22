@@ -145,9 +145,9 @@ public class AIWorkspace {
             default:
                 throw new IllegalArgumentException("Invalid direction given!");
         }
-        if (!isMovePossible(dir)) {
-            return 0;
-        }
+        // if (!isMovePossible(dir)) {
+        //     return 0;
+        // }
         boolean[][] combination = new boolean[boardHeight][boardWidth];// default value is false
         int y_pos;
         int x_pos;
@@ -158,8 +158,8 @@ public class AIWorkspace {
         for(int first_order_i = first_order; intCompare(first_order_i, end_first_order, increment_first_order);
                     first_order_i = inDecrementor(first_order_i, increment_first_order)) {
                         for (int second_order_i = 0; second_order_i < end_second_order; second_order_i++) {
-                            x_pos = adapter(first_order_i, second_order_i, dir, "x_pos");
-                            y_pos = adapter(first_order_i, second_order_i, dir, "y_pos");
+                            x_pos = adapter(first_order_i, second_order_i, dir, 0);
+                            y_pos = adapter(first_order_i, second_order_i, dir, 1);
 
                             if (gameState[y_pos][x_pos] != 0){
                                 move_possible = true;
@@ -195,7 +195,7 @@ public class AIWorkspace {
     return score;
     }
 
-    public boolean isMovePossible(MoveDirection dir) {
+/*     public boolean isMovePossible(MoveDirection dir) {
         int x_dir = 0;
         int y_dir = 0;
         int x_start = 0;
@@ -237,7 +237,7 @@ public class AIWorkspace {
         }
 
         return false;
-    }
+    } */
 
     public int[] getEmptyCoordinate() {
         int[] emptyCoordinate = new int[boardHeight*boardWidth - numPieces];
@@ -264,9 +264,9 @@ public class AIWorkspace {
         return current_value > limit;
     }
 
-    private int adapter(int first_order, int second_order, MoveDirection dir, String assignTo){
+    private int adapter(int first_order, int second_order, MoveDirection dir, int assignTo){
         switch (assignTo){
-            case "x_pos":
+            case 0://"x_pos"
                 switch (dir) {
                     case NORTH: return second_order;
                     case SOUTH: return second_order;
@@ -274,7 +274,7 @@ public class AIWorkspace {
                     case EAST:  return first_order;
                     default:    throw new IllegalArgumentException();
                 }
-            case "y_pos":
+            case 1://"y_pos"
                 switch (dir) {
                     case NORTH: return first_order;
                     case SOUTH: return first_order;

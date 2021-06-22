@@ -6,9 +6,9 @@ public class EIMAlaMotleikz implements PlayerInterface{
     private double[][] WeightMatrixS;
     private int boardHeight;
     private int boardWidth;
-    private double WeightMatrixBase = 1.7; // make sure are you using pow or multiplication
+    private double WeightMatrixBase = 2.5;//use 1.7 @depth = 6 // make sure are you using pow or multiplication
     private double stuckValue = -100000;
-    private int depth = 6;// 3 for speed, 6 for precision
+    private int depth = 3;// 3 for speed, 6 for precision
     private int moveEfficiencyOffset = 3;
     private double NumPieceDeltaMultiplier = 1000;
     private double combinationScoreMultiplier = 150;// this grows with biggest piece, needs to be scaled up
@@ -44,22 +44,24 @@ public class EIMAlaMotleikz implements PlayerInterface{
     }
 
     private MoveDirection nextMove() {
-        int n = depth;
         double bestScore = -1;
         MoveDirection bestMove = randomMove();
         double score = 0;
 
         for (MoveDirection dir: MoveDirection.values()){
+            if (!isMovePossible(basisBoardReference, dir)) {
+                continue;
+            }
             AIWorkspace performedBoard = new AIWorkspace(basisBoardReference);
             score = performedBoard.simulateMove(dir) * combinationScoreMultiplier;
 
             // printGameState(basisBoardReference);
             
-            if (isIdentical(basisBoardReference, performedBoard)) {
-                continue;
-            }
+            // if (isIdentical(basisBoardReference, performedBoard)) {
+            //     continue;
+            // }
 
-            score += expectimax(performedBoard, n - 1, false);
+            score += expectimax(performedBoard, depth - 1, false);
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = dir;
@@ -74,24 +76,27 @@ public class EIMAlaMotleikz implements PlayerInterface{
             if (!board.isMovePossible()) {
                 return stuckValue;
             }
-            double patternHeuristic = patternHeuristic(board);
-            double moveEfficiency = moveEfficiency(board);
+            // double patternHeuristic = patternHeuristic(board);
+            // double moveEfficiency = moveEfficiency(board);
             // System.out.println("patternHeuristic: " + patternHeuristic);
             // System.out.println("moveEfficiency: " + moveEfficiency);
             // System.out.println("Actual Calculation returned");
-            return patternHeuristic + moveEfficiency;
+            return patternHeuristic(board) + moveEfficiency(board);
         }
 
         if (maxPlayer) {
             double bestScore = -1;
             double score = 0;
             for (MoveDirection dir: MoveDirection.values()){
+                if (!isMovePossible(board, dir)) {
+                    continue;
+                }
                 AIWorkspace performedBoard = new AIWorkspace(board);
                 score = performedBoard.simulateMove(dir) * combinationScoreMultiplier;
 
-                if (isIdentical(board, performedBoard)){
-                    continue;
-                }
+                // if (isIdentical(board, performedBoard)){
+                //     continue;
+                // }
                 score += expectimax(performedBoard, n - 1, false);
 
                 if (score > bestScore) {
@@ -123,20 +128,20 @@ public class EIMAlaMotleikz implements PlayerInterface{
         return sumScore / num;
     }
 
-    private boolean isIdentical(AIWorkspace cmp1, AIWorkspace cmp2){
-        if (cmp1.getBoardHeight() != cmp2.getBoardHeight() || cmp1.getBoardWidth() != cmp2.getBoardWidth()){
-            throw new IllegalArgumentException();
-        }
-        for (int y_pos = 0; y_pos < cmp1.getBoardHeight(); y_pos++){
-            for (int x_pos = 0; x_pos < cmp1.getBoardWidth(); x_pos++){
-                if (cmp1.getPieceAt(x_pos, y_pos) != cmp2.getPieceAt(x_pos, y_pos)){
-                    return false;
-                }
-            }
-        }
+    // private boolean isIdentical(AIWorkspace cmp1, AIWorkspace cmp2){
+    //     if (cmp1.getBoardHeight() != cmp2.getBoardHeight() || cmp1.getBoardWidth() != cmp2.getBoardWidth()){
+    //         throw new IllegalArgumentException();
+    //     }
+    //     for (int y_pos = 0; y_pos < cmp1.getBoardHeight(); y_pos++){
+    //         for (int x_pos = 0; x_pos < cmp1.getBoardWidth(); x_pos++){
+    //             if (cmp1.getPieceAt(x_pos, y_pos) != cmp2.getPieceAt(x_pos, y_pos)){
+    //                 return false;
+    //             }
+    //         }
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     private MoveDirection randomMove() {
         Random r = new Random();
@@ -158,7 +163,7 @@ public class EIMAlaMotleikz implements PlayerInterface{
         return (basisBoardReference.getNumPieces() - board.getNumPieces() + moveEfficiencyOffset) * NumPieceDeltaMultiplier;
     }
 
-    private void printGameState(AIWorkspace board) {
+/*     private void printGameState(AIWorkspace board) {
         for (int y = 0; y < board.getBoardHeight(); y++) {
             for (int x = 0; x < board.getBoardWidth(); x++) {
                 System.out.print("|" + board.getPieceAt(x, y) + "|");
@@ -166,5 +171,52 @@ public class EIMAlaMotleikz implements PlayerInterface{
             if(y != board.getBoardHeight() - 1){System.out.println("\n---------");}
         }
         System.out.print("\n\n\n");
+    } */
+
+    private boolean isMovePossible(AIWorkspace board, MoveDirection direction) {
+        if (direction == null){
+            throw new IllegalArgumentException("Invalid direction was given");
+        }
+        int x_dir = 0;
+        int y_dir = 0;
+        int x_start = 0;
+        int x_end = board.getBoardWidth();
+        int y_start = 0;
+        int y_end = board.getBoardHeight();
+        switch (direction) {
+            case NORTH:
+                y_dir = -1;
+                y_start = 1;
+                break;
+            case SOUTH:
+                y_dir = 1;
+                y_end -= 1;
+                break;
+            case WEST:
+                x_dir = -1;
+                x_start = 1;
+                break;
+            case EAST:
+                x_dir = 1;
+                x_end -= 1;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid direction was given");
+        }
+
+        for (int y_pos = y_start; y_pos < y_end; y_pos++) {
+            for (int x_pos = x_start; x_pos < x_end; x_pos++) {
+                if (board.getPieceAt(x_pos, y_pos) != 0){
+                    if (board.getPieceAt(x_pos + x_dir, y_pos + y_dir) == 0) { // if the destination is 0
+                        return true;
+                    }
+                    if (board.getPieceAt(x_pos, y_pos) == board.getPieceAt(x_pos + x_dir, y_pos + y_dir)){ //if 2 pieces are same
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
