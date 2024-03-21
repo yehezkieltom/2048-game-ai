@@ -441,8 +441,8 @@ public class Simulator implements SimulatorInterface {
         for(int first_order_i = first_order; intCompare(first_order_i, end_first_order, increment_first_order);
                     first_order_i = inDecrementor(first_order_i, increment_first_order)) {
                         for (int second_order_i = 0; second_order_i < end_second_order; second_order_i++) {
-                            x_pos = adapter(first_order_i, second_order_i, direction, "x_pos");
-                            y_pos = adapter(first_order_i, second_order_i, direction, "y_pos");
+                            x_pos = adapter(first_order_i, second_order_i, direction, 0);
+                            y_pos = adapter(first_order_i, second_order_i, direction, 1);
 
                             if (getPieceAt(x_pos, y_pos) != 0){
                                 move_possible = true;
@@ -486,17 +486,44 @@ public class Simulator implements SimulatorInterface {
         }
         boolean moved;
         setNumPieces();
-        while (isMovePossible()) {
-            ui.updateScreen(this);
+        boolean endgame = false;
+        boolean checked = false;
+        ui.updateScreen(this);
+        while (isMovePossible() && !endgame) {
             moved = false;
             while (!moved){
                 moved = performMove(player.getPlayerMove(this, ui));
             }
             addPiece();
             setNumPieces();
+            ui.updateScreen(this);
+            //scan for 2048 piece
+            if (!checked) {
+                for (int y = 0; y < this.getBoardHeight(); y++) {
+                    for (int x = 0; x < this.getBoardWidth(); x++) {
+                        if (getPieceAt(x,y) == 2048) {
+                            ui.showMessage("You have won");
+                            String[] userAnswers = new String[4];
+                            userAnswers[0] = "Y";
+                            userAnswers[1] = "y";
+
+                            userAnswers[2] = "N";
+                            userAnswers[3] = "n";
+
+                            String userAnswer = ui.getUserInput("Continue? Y/N", userAnswers);
+                            if (userAnswer == "N" || userAnswer == "n") {
+                                return;
+                            }
+                            checked = true;
+                        }
+                    }
+                }
+            }
         }
-        ui.updateScreen(this);
-        ui.showGameOverScreen(this);
+        if (!endgame) {
+            ui.updateScreen(this);
+            ui.showGameOverScreen(this);
+        }
     }
 
     public void setPieceAt(int x, int y, int piece) {
@@ -538,9 +565,9 @@ public class Simulator implements SimulatorInterface {
         return current_value > limit;
     }
 
-    private int adapter(int first_order, int second_order, MoveDirection dir, String assignTo){
+    private int adapter(int first_order, int second_order, MoveDirection dir, int assignTo){
         switch (assignTo){
-            case "x_pos":
+            case 0://"x_pos"
                 switch (dir) {
                     case NORTH: return second_order;
                     case SOUTH: return second_order;
@@ -548,7 +575,7 @@ public class Simulator implements SimulatorInterface {
                     case EAST:  return first_order;
                     default:    throw new IllegalArgumentException();
                 }
-            case "y_pos":
+            case 1://"y_pos"
                 switch (dir) {
                     case NORTH: return first_order;
                     case SOUTH: return first_order;

@@ -336,6 +336,7 @@ public class MethodsCheck {
         game.setPieceAt(2, 1, 2);
         game.performMove(MoveDirection.EAST);
         assertEquals("Merging error", 3, game.getNumPieces());
+        assertEquals("Merging error", 4, game.getPieceAt(3, 1));
     }
 
     @Test

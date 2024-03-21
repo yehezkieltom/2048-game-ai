@@ -6,12 +6,13 @@ public class EIMAlaMotleikz implements PlayerInterface{
     private double[][] WeightMatrixS;
     private int boardHeight;
     private int boardWidth;
-    private double WeightMatrixBase = 2.5;//use 1.7 @depth = 6 // make sure are you using pow or multiplication
-    private double stuckValue = -100000;
-    private int depth = 3;// 3 for speed, 6 for precision
+    private double WeightMatrixBase = 2;//use 1.7 @depth = 6 // make sure are you using pow or multiplication
+    private double stuckValue = -1000000;
+    private int depth = 6;// 3 for speed, 6 for precision
     private int moveEfficiencyOffset = 3;
-    private double NumPieceDeltaMultiplier = 1000;
+    // private double NumPieceDeltaMultiplier = 1000;
     private double combinationScoreMultiplier = 150;// this grows with biggest piece, needs to be scaled up
+    private int moveEfficiencyScaler = 100;
     private AIWorkspace basisBoardReference;
 
     public MoveDirection getPlayerMove(SimulatorInterface game, UserInterface ui) {
@@ -76,12 +77,12 @@ public class EIMAlaMotleikz implements PlayerInterface{
             if (!board.isMovePossible()) {
                 return stuckValue;
             }
-            // double patternHeuristic = patternHeuristic(board);
-            // double moveEfficiency = moveEfficiency(board);
+            double patternHeuristic = patternHeuristic(board);
+            double moveEfficiency = moveEfficiency(board, patternHeuristic);
             // System.out.println("patternHeuristic: " + patternHeuristic);
             // System.out.println("moveEfficiency: " + moveEfficiency);
             // System.out.println("Actual Calculation returned");
-            return patternHeuristic(board) + moveEfficiency(board);
+            return patternHeuristic + moveEfficiency;
         }
 
         if (maxPlayer) {
@@ -159,8 +160,13 @@ public class EIMAlaMotleikz implements PlayerInterface{
         return sum;
     }
 
-    private double moveEfficiency(AIWorkspace board) {
-        return (basisBoardReference.getNumPieces() - board.getNumPieces() + moveEfficiencyOffset) * NumPieceDeltaMultiplier;
+    private double moveEfficiency(AIWorkspace board, double patternHeuristicCurrent) {
+        double multiplier = 1;
+        while (patternHeuristicCurrent > moveEfficiencyScaler) {
+            patternHeuristicCurrent = patternHeuristicCurrent / 10;
+            multiplier *= 10;
+        }
+        return (basisBoardReference.getNumPieces() - board.getNumPieces() + moveEfficiencyOffset) * multiplier;
     }
 
 /*     private void printGameState(AIWorkspace board) {

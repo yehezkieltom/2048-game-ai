@@ -13,8 +13,6 @@ public class AIWorkspace {
         this.numPieces = 0;
         this.gameState = new int[boardHeight][boardWidth];
 
-        
-        
         //Current Game Board Cloning
         for (int y_pos = 0; y_pos < boardHeight; y_pos++) {
             for (int x_pos = 0; x_pos < boardWidth; x_pos++) {
@@ -190,9 +188,9 @@ public class AIWorkspace {
                         }
                     }
     
-    updateNumPieces();
-    
-    return score;
+        updateNumPieces();
+        
+        return score;
     }
 
 /*     public boolean isMovePossible(MoveDirection dir) {
